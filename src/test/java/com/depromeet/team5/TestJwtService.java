@@ -1,5 +1,7 @@
 package com.depromeet.team5;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 
@@ -30,6 +32,6 @@ public class TestJwtService {
 	
 	@Test
 	public void testIsUsable() {
-	  jwtService.isUsable(test_jwt);
+	  assertThat(jwtService.isUsable(test_jwt)).isEqualTo(true);
 	}
 }
