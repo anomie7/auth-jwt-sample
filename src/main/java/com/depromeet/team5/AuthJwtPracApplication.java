@@ -1,4 +1,4 @@
-package com.depromeet.track4;
+package com.depromeet.team5;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
