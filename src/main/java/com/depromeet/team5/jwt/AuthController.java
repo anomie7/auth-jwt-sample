@@ -16,23 +16,23 @@ import com.depromeet.team5.User;
 
 @RestController 
 public class AuthController {
-//	@Autowired
-//	private JwtService jwtService;
-//	final String jwt_header = "Authorization";
-//
-//	@PostMapping(path = "/login")
-//	public ResponseEntity<String> generateToken(@RequestBody User user) throws Exception {
-//		return jwtService.userHandler(user);
-//	}
-//
-//	@PostMapping(path = "/auth")
-//	public ResponseEntity<String> getToken(HttpServletRequest request) throws Exception {
-//		String jwt = request.getHeader(jwt_header);
-//		if (!jwtService.isUsable(jwt)) {
-//			throw new Exception("is not usable jwt");
-//		}
-//		return ResponseEntity.ok().body("Success! useable jwt");
-//	}
+	@Autowired
+	private JwtService jwtService;
+	final String jwt_header = "Authorization";
+
+	@PostMapping(path = "/login")
+	public ResponseEntity<String> generateToken(@RequestBody User user) throws Exception {
+		return jwtService.userHandler(user);
+	}
+
+	@PostMapping(path = "/auth")
+	public ResponseEntity<String> getToken(HttpServletRequest request) throws Exception {
+		String jwt = request.getHeader(jwt_header);
+		if (!jwtService.isUsable(jwt)) {
+			throw new Exception("is not usable jwt");
+		}
+		return ResponseEntity.ok().body("Success! useable jwt");
+	}
 	
 	@PostMapping(path = "/post")
 	public ResponseEntity<String> getPost(@RequestBody UrlReq url) throws IOException{

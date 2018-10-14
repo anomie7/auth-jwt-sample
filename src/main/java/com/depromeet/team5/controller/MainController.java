@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import lombok.extern.slf4j.Slf4j;
 
 
-@Controller @Slf4j
+@Controller
 public class MainController {
 
 	@GetMapping(path="/")
