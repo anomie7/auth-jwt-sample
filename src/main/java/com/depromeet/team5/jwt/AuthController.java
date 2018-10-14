@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -37,6 +38,8 @@ public class AuthController {
 	@PostMapping(path = "/post")
 	public ResponseEntity<String> getPost(@RequestBody UrlReq url) throws IOException{
 		Document doc = Jsoup.connect(url.getUrl()).get();
-		return ResponseEntity.ok().header("Content-Type", "text/html").body(doc.toString());
+		HttpHeaders responseHeaders = new HttpHeaders();
+		responseHeaders.add("Content-Type", "text/html;charset=utf-8");
+		return ResponseEntity.ok().headers(responseHeaders).body(doc.toString());
 	}
 }

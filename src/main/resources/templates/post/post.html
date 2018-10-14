@@ -20,7 +20,7 @@
 	<script>
         new Vue({
             el: '#app',
-            data: { url: '{{url}}',
+            data: { url: '{{&url}}',
                     title: '',
                     content: '',
             },
@@ -37,8 +37,12 @@
                          let doc = new Readability(article).parse();
                          console.log(doc);
                          $this.title = doc.title;
-                         $this.content = doc.content;
+   	                     $this.content = doc.content;
                      })
+                     .catch(function (error) {
+    					console.log(error);
+    					location.href = $this.url;
+					 })
                 }
             },
             created: function(){
