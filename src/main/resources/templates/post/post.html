@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<title>Document</title>
+</head>
+<script src="js/Readability.js"></script>
+<script src="js/JSDOMParser.js"></script>
+<script src="js/vue.min.js"></script>
+<script src="http://unpkg.com/axios/dist/axios.min.js"></script>
+<body>
+	<div id="app">
+		<div>
+			<h1 v-text="title"></h1>
+			<div class="container" v-html="content"></div>
+		</div>
+	</div>
+	<script>
+        new Vue({
+            el: '#app',
+            data: { url: '{{url}}',
+                    title: '',
+                    content: '',
+            },
+            methods: {
+                parsing() {
+                	 let $this = this;
+                	 axios.post('/post', {
+                		 url: this.url
+                	 })
+                     .then(function (response) {
+                    	 let htm = response.data;
+                         var article = document.cloneNode(true);
+                         article.documentElement.innerHTML = htm;
+                         let doc = new Readability(article).parse();
+                         console.log(doc);
+                         $this.title = doc.title;
+                         $this.content = doc.content;
+                     })
+                }
+            },
+            created: function(){
+            	this.parsing();
+            }
+        })
+        Vue.config.devtools = true;
+    </script>
+</body>
+
+</html>
