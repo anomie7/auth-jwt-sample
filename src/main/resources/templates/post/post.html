@@ -10,6 +10,25 @@
 <script src="js/vue.min.js"></script>
 <script src="js/axios.min.js"></script>
 <style type="text/css">
+#app {
+	padding: 1.1em;
+	margin: 0;
+}
+#header {
+	border-bottom: 1px solid black;
+}
+
+#header a, a:visited {
+	text-decoration: none;
+	color: black;
+}
+#header h1{
+	font-size: 1.6em;
+}
+
+div.container{
+	line-height: 1.5em;
+}
 img {
 	max-width: 100%;
 	height: auto;
@@ -19,7 +38,10 @@ img {
 <body>
 	<div id="app">
 		<div>
-			<h1 v-text="title"></h1>
+			<div id="header">
+				<a :href="url">원 출처</a>
+				<h1 v-text="title"></h1>
+			</div>
 			<div class="container" v-html="content"></div>
 		</div>
 	</div>

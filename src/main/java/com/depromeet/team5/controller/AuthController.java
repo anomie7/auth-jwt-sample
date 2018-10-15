@@ -1,4 +1,4 @@
-package com.depromeet.team5.jwt;
+package com.depromeet.team5.controller;
 
 import java.io.IOException;
 
@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.depromeet.team5.User;
+import com.depromeet.team5.jwt.JwtService;
+import com.depromeet.team5.jwt.UrlReq;
 
 @RestController 
 public class AuthController {
