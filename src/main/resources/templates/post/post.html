@@ -6,7 +6,6 @@
 <meta http-equiv="X-UA-Compatible" content="ie=edge">
 <title>Document</title>
 <script src="js/Readability.js"></script>
-<script src="js/JSDOMParser.js"></script>
 <script src="js/vue.min.js"></script>
 <script src="js/axios.min.js"></script>
 <style type="text/css">
@@ -50,7 +49,7 @@ img {
             el: '#app',
             data: { url: '{{&url}}',
                     title: '',
-                    content: '',
+                    content: ''
             },
             methods: {
                 parsing() {
@@ -63,7 +62,6 @@ img {
                          var article = document.cloneNode(true);
                          article.documentElement.innerHTML = htm;
                          let doc = new Readability(article).parse();
-                         console.log(doc);
                          $this.title = doc.title;
    	                     $this.content = doc.content;
                      })
