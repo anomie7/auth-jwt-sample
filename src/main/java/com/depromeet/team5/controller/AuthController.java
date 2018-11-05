@@ -1,13 +1,8 @@
 package com.depromeet.team5.controller;
 
-import java.io.IOException;
-
 import javax.servlet.http.HttpServletRequest;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,7 +10,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.depromeet.team5.User;
 import com.depromeet.team5.jwt.JwtService;
-import com.depromeet.team5.jwt.UrlReq;
 
 @RestController 
 public class AuthController {
@@ -31,17 +25,9 @@ public class AuthController {
 	@PostMapping(path = "/auth")
 	public ResponseEntity<String> getToken(HttpServletRequest request) throws Exception {
 		String jwt = request.getHeader(jwt_header);
-		if (!jwtService.isUsable(jwt)) {
+		if (!jwtService.thisAccessTokenUsable(jwt)) {
 			throw new Exception("is not usable jwt");
 		}
 		return ResponseEntity.ok().body("Success! useable jwt");
-	}
-	
-	@PostMapping(path = "/post")
-	public ResponseEntity<String> getPost(@RequestBody UrlReq url) throws IOException{
-		Document doc = Jsoup.connect(url.getUrl()).get();
-		HttpHeaders responseHeaders = new HttpHeaders();
-		responseHeaders.add("Content-Type", "text/html;charset=utf-8");
-		return ResponseEntity.ok().headers(responseHeaders).body(doc.toString());
 	}
 }
