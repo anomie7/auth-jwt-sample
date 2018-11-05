@@ -1,4 +1,4 @@
-package com.withkid.auth;
+package com.withkid.auth.domain;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

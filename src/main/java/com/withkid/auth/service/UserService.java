@@ -1,4 +1,4 @@
-package com.withkid.auth;
+package com.withkid.auth.service;
 
 import java.util.HashMap;
 
@@ -6,7 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.withkid.auth.jwt.JwtService;
+import com.withkid.auth.domain.User;
+import com.withkid.auth.repository.UserRepository;
 
 @Service
 public class UserService {

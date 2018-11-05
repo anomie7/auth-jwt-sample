@@ -1,4 +1,4 @@
-package com.withkid.auth.team5;
+package com.withkid.auth.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
@@ -16,7 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.withkid.auth.exception.RefreshTokenExpireDateUpdatePeriodException;
-import com.withkid.auth.jwt.JwtService;
+import com.withkid.auth.service.JwtService;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -38,7 +38,7 @@ public class TestJwtService {
 	}
 
 	@Test
-	public void testCreateRefreshToken() {
+	public void testCreateRefreshToken() throws Exception {
 		assertThat(jwtService.thisRefreshTokenUsable(test_refresh_token)).isEqualTo(true);
 	}
 
@@ -48,7 +48,7 @@ public class TestJwtService {
 	}
 
 	@Test
-	public void testThisRefreshTokenUsable() {
+	public void testThisRefreshTokenUsable() throws Exception {
 		assertThat(jwtService.thisRefreshTokenUsable(test_refresh_token)).isEqualTo(true);
 	}
 

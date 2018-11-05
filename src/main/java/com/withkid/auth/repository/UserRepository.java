@@ -1,6 +1,8 @@
-package com.withkid.auth;
+package com.withkid.auth.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.withkid.auth.domain.User;
 
 public interface UserRepository extends JpaRepository<User, Long>{
 

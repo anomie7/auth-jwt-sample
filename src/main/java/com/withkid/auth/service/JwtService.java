@@ -1,4 +1,4 @@
-package com.withkid.auth.jwt;
+package com.withkid.auth.service;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -61,7 +61,7 @@ public class JwtService {
 		return true;
 	}
 
-	public boolean thisRefreshTokenUsable(String jwt) throws ExpiredJwtException {
+	public boolean thisRefreshTokenUsable(String jwt) throws Exception {
 		Jws<Claims> re = getBody(jwt);
 		if (!re.getHeader().get("type").equals("refresh-token")) {
 			throw new JwtTypeNotMatchedException();
@@ -76,13 +76,9 @@ public class JwtService {
 	}
 
 	public Jws<Claims> getBody(String jwt) {
-		try {
 			Jws<Claims> re = Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(jwt);
 			System.out.println(re.toString());
 			return re;
-		} catch (Exception e) {
-			return null;
-		}
 	}
 
 	public String getEmail(ResponseEntity<String> response) {

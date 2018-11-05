@@ -1,4 +1,4 @@
-package com.withkid.auth.team5;
+package com.withkid.auth.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -9,10 +9,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.withkid.auth.User;
-import com.withkid.auth.UserRepository;
-import com.withkid.auth.UserService;
-import com.withkid.auth.jwt.JwtService;
+import com.withkid.auth.domain.User;
+import com.withkid.auth.repository.UserRepository;
+import com.withkid.auth.service.JwtService;
+import com.withkid.auth.service.UserService;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
