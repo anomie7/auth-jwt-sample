@@ -1,5 +1,9 @@
 package com.depromeet.team5.jwt;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -9,31 +13,79 @@ import org.springframework.stereotype.Service;
 
 import com.depromeet.team5.User;
 import com.depromeet.team5.UserRepository;
+import com.depromeet.team5.exception.JwtTypeNotMatchedException;
+import com.depromeet.team5.exception.RefreshTokenExpireDateUpdatePeriodException;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
 @Service
 public class JwtService {
+
 	final private String SECRET_KEY = "depromeet_mini_prj";
-	final private Date exp = new Date(System.currentTimeMillis() + 72000000);
+	final private ZonedDateTime exp = LocalDateTime.now().atZone(ZoneId.systemDefault());
+
 	@Autowired
 	private UserRepository userRepository;
 
-	public String create(HashMap<String, Object> claims) {
+	public String createAccessToken(HashMap<String, Object> claims) {
 		return Jwts.builder().setHeaderParam("typ", "JWT").setHeaderParam("regDate", System.currentTimeMillis())
-				.setSubject("email").setClaims(claims).setExpiration(exp).signWith(SignatureAlgorithm.HS256, SECRET_KEY)
+				.setHeaderParam("type", "access-token").setSubject("User-Identity").setClaims(claims)
+				.setExpiration(Date.from(exp.plusHours(1).toInstant())).signWith(SignatureAlgorithm.HS256, SECRET_KEY)
 				.compact();
 	}
 
-	public boolean isUsable(String jwt) {
+	public String createRefreshToken(HashMap<String, Object> claims) {
+		return Jwts.builder().setHeaderParam("typ", "JWT").setHeaderParam("regDate", System.currentTimeMillis())
+				.setHeaderParam("type", "refresh-token").setClaims(claims)
+				.setExpiration(Date.from(exp.plusMonths(1).toInstant())).signWith(SignatureAlgorithm.HS256, SECRET_KEY)
+				.compact();
+	}
+
+	public String updateRefreshToken(String token) {
+		Jws<Claims> re = this.getBody(token);
+		Object email = re.getBody().get("email");
+		HashMap<String, Object> claims = new HashMap<>();
+		claims.put("email", email);
+		Object regDate = re.getHeader().get("regDate");
+		Instant exp = LocalDateTime.ofInstant(re.getBody().getExpiration().toInstant(),
+				ZoneId.systemDefault()).plusMonths(1).atZone(ZoneId.systemDefault()).toInstant();
+		return Jwts.builder().setHeaderParam("typ", "JWT").setHeaderParam("regDate", regDate)
+				.setHeaderParam("type", "refresh-token").setClaims(claims)
+				.setExpiration(Date.from(exp)).signWith(SignatureAlgorithm.HS256, SECRET_KEY)
+				.compact();
+	}
+
+	public boolean thisAccessTokenUsable(String jwt) {
 		try {
-			Jws<Claims> re = Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(jwt);
+			Jws<Claims> re = getBody(jwt);
+			if (!re.getHeader().get("type").equals("access-token")) {
+				throw new JwtTypeNotMatchedException();
+			}
 			System.out.println(re.toString());
 			return true;
-		} catch (Exception e) {
+		} catch (ExpiredJwtException e) {
+			return false;
+		}
+	}
+
+	public boolean thisRefreshTokenUsable(String jwt) {
+		try {
+			Jws<Claims> re = getBody(jwt);
+			if (!re.getHeader().get("type").equals("refresh-token")) {
+				throw new JwtTypeNotMatchedException();
+			}
+			LocalDateTime expDate = LocalDateTime.ofInstant(re.getBody().getExpiration().toInstant(),
+					ZoneId.systemDefault());
+			if (LocalDateTime.now().isAfter(expDate.minusWeeks(1))) {
+				throw new RefreshTokenExpireDateUpdatePeriodException();
+			}
+			System.out.println(re.toString());
+			return true;
+		} catch (ExpiredJwtException e) {
 			return false;
 		}
 	}
@@ -53,21 +105,21 @@ public class JwtService {
 		return (String) re.getBody().get("email");
 	}
 
+	// 로그인 로직
 	public ResponseEntity<String> userHandler(User user) throws Exception {
 		String jwt = null;
 
 		if (userRepository.findByEmail(user.getEmail()) == null) {
 			HashMap<String, Object> claims = new HashMap<>();
 			claims.put("email", user.getEmail());
-			jwt = this.create(claims);
+			jwt = this.createAccessToken(claims);
 			userRepository.save(user);
 		}
 
-		if (!this.isUsable(jwt)) {
-			// refresh token
+		if (!this.thisAccessTokenUsable(jwt)) {
 			throw new Exception("무효한 토큰입니다.");
 		}
 
-		return  ResponseEntity.ok().header("Authentication", jwt).body("Done");
+		return ResponseEntity.ok().header("Authentication", jwt).body("Done");
 	}
 }
