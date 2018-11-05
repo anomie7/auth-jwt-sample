@@ -1,16 +1,17 @@
-package com.depromeet.team5.controller;
+package com.withkid.auth.controller;
 
-import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.depromeet.team5.User;
-import com.depromeet.team5.UserService;
-import com.depromeet.team5.jwt.JwtService;
+import com.withkid.auth.User;
+import com.withkid.auth.UserService;
+import com.withkid.auth.jwt.JwtService;
 
 @RestController 
 public class AuthController {
@@ -27,12 +28,14 @@ public class AuthController {
 		return userService.login(user);
 	}
 
-	@PostMapping(path = "/auth")
-	public ResponseEntity<String> getToken(HttpServletRequest request) throws Exception {
-		String jwt = request.getHeader(jwt_header);
-		if (!jwtService.thisAccessTokenUsable(jwt)) {
-			throw new Exception("is not usable jwt");
+	@PostMapping(path = "/accessToken")
+	public ResponseEntity<String> getToken(@RequestHeader("refresh-token") String refreshToken) throws Exception {
+		String accessToken = null;
+		if(jwtService.thisRefreshTokenUsable(refreshToken)) {
+			String email = (String) jwtService.getBody(refreshToken).getBody().get("email");
+			HashMap<String, Object> claims = userService.getAccessTokenClaims(email);
+			accessToken = jwtService.createAccessToken(claims);
 		}
-		return ResponseEntity.ok().body("Success! useable jwt");
+		return ResponseEntity.ok().header(jwt_header, accessToken).body("Access token publishing Done");
 	}
 }

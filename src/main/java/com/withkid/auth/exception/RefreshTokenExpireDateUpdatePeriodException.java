@@ -1,4 +1,4 @@
-package com.depromeet.team5.exception;
+package com.withkid.auth.exception;
 
 import io.jsonwebtoken.JwtException;
 

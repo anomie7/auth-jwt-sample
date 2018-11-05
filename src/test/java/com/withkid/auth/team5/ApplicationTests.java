@@ -1,4 +1,4 @@
-package com.depromeet.team5;
+package com.withkid.auth.team5;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

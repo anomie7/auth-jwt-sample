@@ -1,4 +1,4 @@
-package com.depromeet.team5;
+package com.withkid.auth;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

@@ -1,4 +1,4 @@
-package com.depromeet.team5;
+package com.withkid.auth.team5;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
@@ -15,8 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.depromeet.team5.exception.RefreshTokenExpireDateUpdatePeriodException;
-import com.depromeet.team5.jwt.JwtService;
+import com.withkid.auth.exception.RefreshTokenExpireDateUpdatePeriodException;
+import com.withkid.auth.jwt.JwtService;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest

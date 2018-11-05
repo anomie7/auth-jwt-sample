@@ -1,4 +1,4 @@
-package com.depromeet.team5.jwt;
+package com.withkid.auth.jwt;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -10,8 +10,8 @@ import java.util.HashMap;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.depromeet.team5.exception.JwtTypeNotMatchedException;
-import com.depromeet.team5.exception.RefreshTokenExpireDateUpdatePeriodException;
+import com.withkid.auth.exception.JwtTypeNotMatchedException;
+import com.withkid.auth.exception.RefreshTokenExpireDateUpdatePeriodException;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;

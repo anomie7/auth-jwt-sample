@@ -1,4 +1,4 @@
-package com.depromeet.team5;
+package com.withkid.auth;
 
 import java.util.HashMap;
 
@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.depromeet.team5.jwt.JwtService;
+import com.withkid.auth.jwt.JwtService;
 
 @Service
 public class UserService {
@@ -32,5 +32,13 @@ public class UserService {
 		claims.put("id", findUser.getId());
 		aceessToken = jwtService.createAccessToken(claims);
 		return ResponseEntity.ok().header("Authentication", aceessToken).header("refresh_token", refreshToken).body("Done");
+	}
+	
+	public HashMap<String, Object> getAccessTokenClaims(String email) {
+		User user = userRepository.findByEmail(email);
+		HashMap<String, Object> claims = new HashMap<String, Object>();
+		claims.put("email", user.getEmail());
+		claims.put("id", user.getId());
+		return claims;
 	}
 }

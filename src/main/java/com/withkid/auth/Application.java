@@ -1,4 +1,4 @@
-package com.depromeet.team5;
+package com.withkid.auth;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
