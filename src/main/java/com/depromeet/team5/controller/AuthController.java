@@ -9,17 +9,22 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.depromeet.team5.User;
+import com.depromeet.team5.UserService;
 import com.depromeet.team5.jwt.JwtService;
 
 @RestController 
 public class AuthController {
 	@Autowired
 	private JwtService jwtService;
+	
+	@Autowired
+	private UserService userService;
+	
 	final String jwt_header = "Authorization";
 
 	@PostMapping(path = "/login")
 	public ResponseEntity<String> generateToken(@RequestBody User user) throws Exception {
-		return jwtService.userHandler(user);
+		return userService.login(user);
 	}
 
 	@PostMapping(path = "/auth")

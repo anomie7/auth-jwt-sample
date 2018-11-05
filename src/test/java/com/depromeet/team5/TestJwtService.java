@@ -18,14 +18,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 import com.depromeet.team5.exception.RefreshTokenExpireDateUpdatePeriodException;
 import com.depromeet.team5.jwt.JwtService;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class TestJwtService {
-	final private String SECRET_KEY = "depromeet_mini_prj";
-
 	@Autowired
 	private JwtService jwtService;
 

@@ -7,12 +7,9 @@ import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.HashMap;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.depromeet.team5.User;
-import com.depromeet.team5.UserRepository;
 import com.depromeet.team5.exception.JwtTypeNotMatchedException;
 import com.depromeet.team5.exception.RefreshTokenExpireDateUpdatePeriodException;
 
@@ -27,9 +24,6 @@ public class JwtService {
 
 	final private String SECRET_KEY = "depromeet_mini_prj";
 	final private ZonedDateTime exp = LocalDateTime.now().atZone(ZoneId.systemDefault());
-
-	@Autowired
-	private UserRepository userRepository;
 
 	public String createAccessToken(HashMap<String, Object> claims) {
 		return Jwts.builder().setHeaderParam("typ", "JWT").setHeaderParam("regDate", System.currentTimeMillis())
@@ -51,43 +45,34 @@ public class JwtService {
 		HashMap<String, Object> claims = new HashMap<>();
 		claims.put("email", email);
 		Object regDate = re.getHeader().get("regDate");
-		Instant exp = LocalDateTime.ofInstant(re.getBody().getExpiration().toInstant(),
-				ZoneId.systemDefault()).plusMonths(1).atZone(ZoneId.systemDefault()).toInstant();
+		Instant exp = LocalDateTime.ofInstant(re.getBody().getExpiration().toInstant(), ZoneId.systemDefault())
+				.plusMonths(1).atZone(ZoneId.systemDefault()).toInstant();
 		return Jwts.builder().setHeaderParam("typ", "JWT").setHeaderParam("regDate", regDate)
-				.setHeaderParam("type", "refresh-token").setClaims(claims)
-				.setExpiration(Date.from(exp)).signWith(SignatureAlgorithm.HS256, SECRET_KEY)
-				.compact();
+				.setHeaderParam("type", "refresh-token").setClaims(claims).setExpiration(Date.from(exp))
+				.signWith(SignatureAlgorithm.HS256, SECRET_KEY).compact();
 	}
 
-	public boolean thisAccessTokenUsable(String jwt) {
-		try {
-			Jws<Claims> re = getBody(jwt);
-			if (!re.getHeader().get("type").equals("access-token")) {
-				throw new JwtTypeNotMatchedException();
-			}
-			System.out.println(re.toString());
-			return true;
-		} catch (ExpiredJwtException e) {
-			return false;
+	public boolean thisAccessTokenUsable(String jwt) throws ExpiredJwtException {
+		Jws<Claims> re = getBody(jwt);
+		if (!re.getHeader().get("type").equals("access-token")) {
+			throw new JwtTypeNotMatchedException();
 		}
+		System.out.println(re.toString());
+		return true;
 	}
 
-	public boolean thisRefreshTokenUsable(String jwt) {
-		try {
-			Jws<Claims> re = getBody(jwt);
-			if (!re.getHeader().get("type").equals("refresh-token")) {
-				throw new JwtTypeNotMatchedException();
-			}
-			LocalDateTime expDate = LocalDateTime.ofInstant(re.getBody().getExpiration().toInstant(),
-					ZoneId.systemDefault());
-			if (LocalDateTime.now().isAfter(expDate.minusWeeks(1))) {
-				throw new RefreshTokenExpireDateUpdatePeriodException();
-			}
-			System.out.println(re.toString());
-			return true;
-		} catch (ExpiredJwtException e) {
-			return false;
+	public boolean thisRefreshTokenUsable(String jwt) throws ExpiredJwtException {
+		Jws<Claims> re = getBody(jwt);
+		if (!re.getHeader().get("type").equals("refresh-token")) {
+			throw new JwtTypeNotMatchedException();
 		}
+		LocalDateTime expDate = LocalDateTime.ofInstant(re.getBody().getExpiration().toInstant(),
+				ZoneId.systemDefault());
+		if (LocalDateTime.now().isAfter(expDate.minusWeeks(1))) {
+			throw new RefreshTokenExpireDateUpdatePeriodException();
+		}
+		System.out.println(re.toString());
+		return true;
 	}
 
 	public Jws<Claims> getBody(String jwt) {
@@ -103,23 +88,5 @@ public class JwtService {
 	public String getEmail(ResponseEntity<String> response) {
 		Jws<Claims> re = getBody(response.getHeaders().get("Authentication").get(0));
 		return (String) re.getBody().get("email");
-	}
-
-	// 로그인 로직
-	public ResponseEntity<String> userHandler(User user) throws Exception {
-		String jwt = null;
-
-		if (userRepository.findByEmail(user.getEmail()) == null) {
-			HashMap<String, Object> claims = new HashMap<>();
-			claims.put("email", user.getEmail());
-			jwt = this.createAccessToken(claims);
-			userRepository.save(user);
-		}
-
-		if (!this.thisAccessTokenUsable(jwt)) {
-			throw new Exception("무효한 토큰입니다.");
-		}
-
-		return ResponseEntity.ok().header("Authentication", jwt).body("Done");
 	}
 }

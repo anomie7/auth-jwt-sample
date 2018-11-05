@@ -18,14 +18,28 @@ public class TestUserService {
 	private UserRepository userRepository;
 	
 	@Autowired
+	private UserService userService;
+	@Autowired
 	private JwtService jwtService;
 	
 	@Test
-	public void testGenerateJwt() throws Exception {
+	public void testNewUserGenerateJwt() throws Exception {
 		User user = new User(null, "depromeet@Track5.com", "password5");
-		ResponseEntity<String> response = jwtService.userHandler(user);
+		ResponseEntity<String> response = userService.login(user);
 		String email = jwtService.getEmail(response);
 		
+		User findUser = userRepository.findByEmail(user.getEmail());
+		assertThat(findUser).isEqualTo(user);
+		assertThat(email).isEqualTo(user.getEmail());
+	}
+	
+	@Test
+	public void testOlderUserGenerateJwt() throws Exception {
+		User user = new User(null, "depromeet@Track5.com", "password5");
+		ResponseEntity<String> response = userService.login(user);
+		
+		ResponseEntity<String> response2 = userService.login(user);
+		String email = jwtService.getEmail(response2);
 		User findUser = userRepository.findByEmail(user.getEmail());
 		assertThat(findUser).isEqualTo(user);
 		assertThat(email).isEqualTo(user.getEmail());
