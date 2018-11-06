@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 
 import java.io.UnsupportedEncodingException;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -16,7 +16,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.withkid.auth.exception.RefreshTokenExpireDateUpdatePeriodException;
-import com.withkid.auth.service.JwtService;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -59,13 +61,29 @@ public class TestJwtService {
 		Date after = jwtService.getBody(refresh_token).getBody().getExpiration();
 		assertEquals(true, before.before(after));
 	}
-	
-	@Test(expected=RefreshTokenExpireDateUpdatePeriodException.class)
-	public void expectedRefreshTokenExpireDateUpdatePeriodException() {
-		LocalDateTime now = LocalDateTime.now();
-		LocalDateTime expDate = LocalDateTime.now().plusDays(10);
-		if(now.plusDays(4).isAfter(expDate.minusWeeks(1))){
-			throw new RefreshTokenExpireDateUpdatePeriodException();
-		}
+
+	@Test(expected = RefreshTokenExpireDateUpdatePeriodException.class)
+	public void expectedRefreshTokenExpireDateUpdatePeriodException() throws Exception {
+		String sampleRefreshTkn = jwtService
+				.createSampleRefreshToken(Date.from(ZonedDateTime.now().plusDays(6).toInstant()));
+		jwtService.thisRefreshTokenUsable(sampleRefreshTkn);
 	}
+
+	@Test
+	public void testUpdateRefreshToken() throws Exception {
+		String sampleRefreshTkn = jwtService
+				.createSampleRefreshToken(Date.from(ZonedDateTime.now().plusDays(6).toInstant()));
+		String updatedToken = null;
+		try {
+			jwtService.thisRefreshTokenUsable(sampleRefreshTkn);
+		}  catch (RefreshTokenExpireDateUpdatePeriodException e) {
+			updatedToken = jwtService.updateRefreshToken(sampleRefreshTkn);
+		}
+		
+		Jws<Claims> beforeToken = jwtService.getBody(sampleRefreshTkn);
+		Jws<Claims> afterToken = jwtService.getBody(updatedToken);
+		assertEquals(beforeToken.getHeader().get("regDate"), afterToken.getHeader().get("regDate"));
+		assertEquals(true, beforeToken.getBody().getExpiration().before(afterToken.getBody().getExpiration()));
+	}
+
 }

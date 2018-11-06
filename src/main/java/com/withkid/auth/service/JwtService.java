@@ -38,6 +38,14 @@ public class JwtService {
 				.setExpiration(Date.from(exp.plusMonths(1).toInstant())).signWith(SignatureAlgorithm.HS256, SECRET_KEY)
 				.compact();
 	}
+	
+
+	public String createSampleRefreshToken(Date exp) {
+		return Jwts.builder().setHeaderParam("typ", "JWT").setHeaderParam("regDate", System.currentTimeMillis())
+				.setHeaderParam("type", "refresh-token")
+				.setExpiration(exp).signWith(SignatureAlgorithm.HS256, SECRET_KEY)
+				.compact();
+	}
 
 	public String updateRefreshToken(String token) {
 		Jws<Claims> re = this.getBody(token);
@@ -45,8 +53,8 @@ public class JwtService {
 		HashMap<String, Object> claims = new HashMap<>();
 		claims.put("email", email);
 		Object regDate = re.getHeader().get("regDate");
-		Instant exp = LocalDateTime.ofInstant(re.getBody().getExpiration().toInstant(), ZoneId.systemDefault())
-				.plusMonths(1).atZone(ZoneId.systemDefault()).toInstant();
+		Instant exp = ZonedDateTime.ofInstant(re.getBody().getExpiration().toInstant(), ZoneId.systemDefault())
+				.plusMonths(1).toInstant();
 		return Jwts.builder().setHeaderParam("typ", "JWT").setHeaderParam("regDate", regDate)
 				.setHeaderParam("type", "refresh-token").setClaims(claims).setExpiration(Date.from(exp))
 				.signWith(SignatureAlgorithm.HS256, SECRET_KEY).compact();
@@ -57,7 +65,6 @@ public class JwtService {
 		if (!re.getHeader().get("type").equals("access-token")) {
 			throw new JwtTypeNotMatchedException();
 		}
-		System.out.println(re.toString());
 		return true;
 	}
 
@@ -71,7 +78,6 @@ public class JwtService {
 		if (LocalDateTime.now().isAfter(expDate.minusWeeks(1))) {
 			throw new RefreshTokenExpireDateUpdatePeriodException();
 		}
-		System.out.println(re.toString());
 		return true;
 	}
 
