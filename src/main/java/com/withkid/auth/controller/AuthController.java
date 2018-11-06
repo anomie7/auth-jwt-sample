@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -24,10 +25,11 @@ public class AuthController {
 
 	final String jwt_header = "Authorization";
 	final String refreshHeader = "refresh-token";
-	
+
 	@PostMapping(path = "/login")
-	public ResponseEntity<String> generateToken(@RequestBody User user) throws Exception {
-		return userService.login(user);
+	public ResponseEntity<HashMap<String, String>> generateToken(@RequestBody User user) throws Exception {
+		HashMap<String, String> tokens = userService.login(user);
+		return ResponseEntity.ok().body(tokens);
 	}
 
 	@PostMapping(path = "/accessToken")
@@ -41,8 +43,14 @@ public class AuthController {
 			}
 		} catch (RefreshTokenExpireDateUpdatePeriodException e) {
 			refreshToken = jwtService.updateRefreshToken(refreshToken);
-			return  ResponseEntity.ok().header(refreshHeader, refreshToken).body("Refresh token update Done");
+			return ResponseEntity.ok().header(refreshHeader, refreshToken).body("Refresh token update Done");
 		}
 		return ResponseEntity.ok().header(jwt_header, accessToken).body("Access token publishing Done");
+	}
+	
+	@GetMapping(path = "/accessToken")
+	public ResponseEntity<String> validateToken(@RequestHeader(jwt_header) String accessToken){
+		jwtService.thisAccessTokenUsable(accessToken);
+		return ResponseEntity.ok().body("this access token valid");
 	}
 }
