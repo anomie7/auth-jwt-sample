@@ -41,7 +41,7 @@ public class AuthController {
 			}
 		} catch (RefreshTokenExpireDateUpdatePeriodException e) {
 			refreshToken = jwtService.updateRefreshToken(refreshToken);
-			return  ResponseEntity.ok().header(refreshHeader, refreshToken).body("Refresh token publishing Done");
+			return  ResponseEntity.ok().header(refreshHeader, refreshToken).body("Refresh token update Done");
 		}
 		return ResponseEntity.ok().header(jwt_header, accessToken).body("Access token publishing Done");
 	}

@@ -41,8 +41,10 @@ public class JwtService {
 	
 
 	public String createSampleRefreshToken(Date exp) {
+		HashMap<String, Object> claims = new HashMap<>();
+		claims.put("email", "sample@sample.com");
 		return Jwts.builder().setHeaderParam("typ", "JWT").setHeaderParam("regDate", System.currentTimeMillis())
-				.setHeaderParam("type", "refresh-token")
+				.setHeaderParam("type", "refresh-token").setClaims(claims)
 				.setExpiration(exp).signWith(SignatureAlgorithm.HS256, SECRET_KEY)
 				.compact();
 	}

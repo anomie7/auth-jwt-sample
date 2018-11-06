@@ -1,12 +1,14 @@
 package com.withkid.auth.service;
 
 import java.util.HashMap;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.withkid.auth.domain.User;
+import com.withkid.auth.exception.UserNotFoundException;
 import com.withkid.auth.repository.UserRepository;
 
 @Service
@@ -36,7 +38,8 @@ public class UserService {
 	}
 	
 	public HashMap<String, Object> getAccessTokenClaims(String email) {
-		User user = userRepository.findByEmail(email);
+		Optional<User> userOpt = Optional.ofNullable(userRepository.findByEmail(email));
+		User user = userOpt.orElseThrow(UserNotFoundException::new);
 		HashMap<String, Object> claims = new HashMap<String, Object>();
 		claims.put("email", user.getEmail());
 		claims.put("id", user.getId());
