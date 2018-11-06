@@ -85,7 +85,6 @@ public class JwtService {
 
 	public Jws<Claims> getBody(String jwt) {
 			Jws<Claims> re = Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(jwt);
-			System.out.println(re.toString());
 			return re;
 	}
 
