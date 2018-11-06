@@ -7,7 +7,6 @@ import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.HashMap;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.withkid.auth.exception.JwtTypeNotMatchedException;
@@ -86,10 +85,5 @@ public class JwtService {
 	public Jws<Claims> getBody(String jwt) {
 			Jws<Claims> re = Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(jwt);
 			return re;
-	}
-
-	public String getEmail(ResponseEntity<String> response) {
-		Jws<Claims> re = getBody(response.getHeaders().get("Authentication").get(0));
-		return (String) re.getBody().get("email");
 	}
 }
