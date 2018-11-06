@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.withkid.auth.domain.User;
@@ -20,12 +19,12 @@ public class UserService {
 	private JwtService jwtService;
 	
 	// 로그인 로직
-	public ResponseEntity<String> login(User user) throws Exception {
+	public HashMap<String, String> login(User user) throws Exception {
 		String aceessToken = null;
 		String refreshToken = null;
 
 		User findUser = userRepository.findByEmail(user.getEmail());
-		if (findUser == null) { 
+		if (findUser == null) {  
 			findUser = userRepository.save(user);
 		}
 		
@@ -34,7 +33,10 @@ public class UserService {
 		refreshToken = jwtService.createRefreshToken(claims);
 		claims.put("id", findUser.getId());
 		aceessToken = jwtService.createAccessToken(claims);
-		return ResponseEntity.ok().header("Authentication", aceessToken).header("refresh_token", refreshToken).body("Done");
+		HashMap<String, String> res = new HashMap<>();
+		res.put("accessToken", aceessToken);
+		res.put("refreshToken", refreshToken);
+		return res;
 	}
 	
 	public HashMap<String, Object> getAccessTokenClaims(String email) {
