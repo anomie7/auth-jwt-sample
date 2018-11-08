@@ -3,6 +3,7 @@ package com.withkid.auth.controller;
 import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,8 +34,9 @@ public class AuthController {
 	}
 
 	@PostMapping(path = "/accessToken")
-	public ResponseEntity<String> getToken(@RequestHeader("refresh-token") String refreshToken) throws Exception {
+	public ResponseEntity<HashMap<String, String>> getToken(@RequestHeader(jwt_header) String refreshToken) throws Exception {
 		String accessToken = null;
+		HashMap<String, String> tokens = new HashMap<>();
 		try {
 			if (jwtService.thisRefreshTokenUsable(refreshToken)) {
 				String email = (String) jwtService.getBody(refreshToken).getBody().get("email");
@@ -43,9 +45,15 @@ public class AuthController {
 			}
 		} catch (RefreshTokenExpireDateUpdatePeriodException e) {
 			refreshToken = jwtService.updateRefreshToken(refreshToken);
-			return ResponseEntity.ok().header(refreshHeader, refreshToken).body("Refresh token update Done");
+			String email = (String) jwtService.getBody(refreshToken).getBody().get("email");
+			HashMap<String, Object> claims = userService.getAccessTokenClaims(email);
+			accessToken = jwtService.createAccessToken(claims);
+			tokens.put("refreshToken", refreshToken);
+			tokens.put("accessToken", accessToken);
+			return ResponseEntity.status(HttpStatus.CREATED).body(tokens);
 		}
-		return ResponseEntity.ok().header(jwt_header, accessToken).body("Access token publishing Done");
+		tokens.put("accessToken", accessToken);
+		return ResponseEntity.ok().body(tokens);
 	}
 	
 	@GetMapping(path = "/accessToken")
