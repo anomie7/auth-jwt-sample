@@ -1,5 +1,38 @@
 spring:
-  mustache:
-    suffix: .html
+  profiles:
+    active: local
+  jpa:
+    show-sql: true
+    properties:
+      hibernate.format_sql: true 
+      use_sql_comments: true
 server:
   port: 8082
+---
+spring:
+  profiles: local
+  datasource:
+    platform: mariadb  
+    driver-class-name: org.mariadb.jdbc.Driver  
+    url: jdbc:mariadb://192.168.99.100:3306/with-kid  
+    username: root  
+    password: 1234  
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+---
+spring:
+  profiles: test
+  jpa:
+    hibernate: 
+      ddl-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate.format_sql: true 
+      use_sql_comments: true
+  output: 
+     ansi: 
+      enabled: always
