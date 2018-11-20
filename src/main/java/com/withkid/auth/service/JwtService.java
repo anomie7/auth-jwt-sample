@@ -22,9 +22,9 @@ import io.jsonwebtoken.SignatureAlgorithm;
 public class JwtService {
 
 	final private String SECRET_KEY = "depromeet_mini_prj";
-	final private ZonedDateTime exp = LocalDateTime.now().atZone(ZoneId.systemDefault());
 
 	public String createAccessToken(HashMap<String, Object> claims) {
+		ZonedDateTime exp = LocalDateTime.now().atZone(ZoneId.systemDefault());
 		return Jwts.builder().setHeaderParam("typ", "JWT").setHeaderParam("regDate", System.currentTimeMillis())
 				.setHeaderParam("type", "access-token").setSubject("User-Identity").setClaims(claims)
 				.setExpiration(Date.from(exp.plusHours(1).toInstant())).signWith(SignatureAlgorithm.HS256, SECRET_KEY)
@@ -32,20 +32,19 @@ public class JwtService {
 	}
 
 	public String createRefreshToken(HashMap<String, Object> claims) {
+		ZonedDateTime exp = LocalDateTime.now().atZone(ZoneId.systemDefault());
 		return Jwts.builder().setHeaderParam("typ", "JWT").setHeaderParam("regDate", System.currentTimeMillis())
 				.setHeaderParam("type", "refresh-token").setClaims(claims)
 				.setExpiration(Date.from(exp.plusMonths(1).toInstant())).signWith(SignatureAlgorithm.HS256, SECRET_KEY)
 				.compact();
 	}
-	
 
 	public String createSampleRefreshToken(Date exp) {
 		HashMap<String, Object> claims = new HashMap<>();
 		claims.put("email", "sample@sample.com");
 		return Jwts.builder().setHeaderParam("typ", "JWT").setHeaderParam("regDate", System.currentTimeMillis())
-				.setHeaderParam("type", "refresh-token").setClaims(claims)
-				.setExpiration(exp).signWith(SignatureAlgorithm.HS256, SECRET_KEY)
-				.compact();
+				.setHeaderParam("type", "refresh-token").setClaims(claims).setExpiration(exp)
+				.signWith(SignatureAlgorithm.HS256, SECRET_KEY).compact();
 	}
 
 	public String updateRefreshToken(String token) {
@@ -83,7 +82,7 @@ public class JwtService {
 	}
 
 	public Jws<Claims> getBody(String jwt) {
-			Jws<Claims> re = Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(jwt);
-			return re;
+		Jws<Claims> re = Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(jwt);
+		return re;
 	}
 }
