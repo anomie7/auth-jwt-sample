@@ -11,13 +11,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.withkid.auth.domain.User;
+import com.withkid.auth.exception.PasswordNotMatchException;
 import com.withkid.auth.exception.UserNotFoundException;
 import com.withkid.auth.repository.UserRepository;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
+@Transactional
 @ActiveProfiles("test")
 public class TestUserService {
 	@Autowired
@@ -55,5 +58,11 @@ public class TestUserService {
 		User findUser = userRepository.findByEmail(olderUser.getEmail());
 		assertThat(findUser.getEmail()).isEqualTo(email);
 	}
-
+	
+	@Test(expected=PasswordNotMatchException.class)
+	public void testPasswordNotMatchUserLogin() throws Exception {
+		User passwordNotMatchUser = new User(null, "depromeet@older.com", "worngPassword");
+		userService.login(passwordNotMatchUser);
+	}
+	
 }

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.withkid.auth.domain.User;
+import com.withkid.auth.exception.PasswordNotMatchException;
 import com.withkid.auth.exception.UserNotFoundException;
 import com.withkid.auth.repository.UserRepository;
 
@@ -23,8 +24,7 @@ public class UserService {
 		String aceessToken = null;
 		String refreshToken = null;
 
-		Optional<User> findUserOpt = Optional.ofNullable(userRepository.findByEmail(user.getEmail()));
-		User findUser = findUserOpt.orElseThrow(UserNotFoundException::new);
+		User findUser = findUser(user).get();
 		
 		HashMap<String, Object> claims = new HashMap<>();
 		claims.put("email", findUser.getEmail());
@@ -35,6 +35,16 @@ public class UserService {
 		res.put("accessToken", aceessToken);
 		res.put("refreshToken", refreshToken);
 		return res;
+	}
+
+	private Optional<User> findUser(User user) {
+		Optional<User> findUserOpt = Optional.ofNullable(userRepository.findByEmail(user.getEmail()));
+		User findUser = findUserOpt.orElseThrow(UserNotFoundException::new);
+		if(user.getPassword().equals(findUser.getPassword())) {
+			return findUserOpt;
+		}else {
+			throw new PasswordNotMatchException();
+		}
 	}
 	
 	public HashMap<String, Object> getAccessTokenClaims(String email) {
