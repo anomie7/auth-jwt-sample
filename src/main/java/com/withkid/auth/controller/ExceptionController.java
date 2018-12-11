@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.withkid.auth.exception.JwtTypeNotMatchedException;
+import com.withkid.auth.exception.PasswordNotMatchException;
 import com.withkid.auth.exception.UserNotFoundException;
 
 import io.jsonwebtoken.ExpiredJwtException;
@@ -20,6 +21,13 @@ public class ExceptionController {
 		ErrorResponse body = ErrorResponse.builder().name(UserNotFoundException.class.getSimpleName())
 				.msg("유저를 찾을 수 없습니다.").status(HttpStatus.NOT_FOUND).build();
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
+	}
+	
+	@ExceptionHandler(PasswordNotMatchException.class)
+	public ResponseEntity<ErrorResponse> passwordNotMatchHanler() {
+		ErrorResponse body = ErrorResponse.builder().name(PasswordNotMatchException.class.getSimpleName())
+				.msg("비밀번호가 일치하지 않습니다.").status(HttpStatus.UNAUTHORIZED).build();
+		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body);
 	}
 
 	@ExceptionHandler(ExpiredJwtException.class)
