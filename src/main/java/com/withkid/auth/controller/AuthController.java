@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.withkid.auth.domain.User;
-import com.withkid.auth.exception.RefreshTokenExpireDateUpdatePeriodException;
+import com.withkid.auth.exception.RefreshTokenUpdatePeriodOverException;
 import com.withkid.auth.service.JwtService;
 import com.withkid.auth.service.UserService;
 
@@ -43,7 +43,7 @@ public class AuthController {
 				HashMap<String, Object> claims = userService.getAccessTokenClaims(email);
 				accessToken = jwtService.createAccessToken(claims);
 			}
-		} catch (RefreshTokenExpireDateUpdatePeriodException e) {
+		} catch (RefreshTokenUpdatePeriodOverException e) {
 			refreshToken = jwtService.updateRefreshToken(refreshToken);
 			String email = (String) jwtService.getBody(refreshToken).getBody().get("email");
 			HashMap<String, Object> claims = userService.getAccessTokenClaims(email);

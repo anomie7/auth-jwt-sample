@@ -16,7 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.withkid.auth.exception.RefreshTokenExpireDateUpdatePeriodException;
+import com.withkid.auth.exception.RefreshTokenUpdatePeriodOverException;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
@@ -28,7 +28,7 @@ public class TestJwtService {
 	@Autowired
 	private JwtService jwtService;
 
-	private String test_jwt;
+	private String test_access_token;
 
 	private String test_refresh_token;
 
@@ -38,7 +38,7 @@ public class TestJwtService {
 		claims.put("email", "depromeet@tract4.com");
 		test_refresh_token = jwtService.createRefreshToken(claims);
 		claims.put("Id", 1);
-		test_jwt = jwtService.createAccessToken(claims);
+		test_access_token = jwtService.createAccessToken(claims);
 	}
 
 	@Test
@@ -48,7 +48,7 @@ public class TestJwtService {
 
 	@Test
 	public void testThisAccessTokenUsable() {
-		assertThat(jwtService.thisAccessTokenUsable(test_jwt)).isEqualTo(true);
+		assertThat(jwtService.thisAccessTokenUsable(test_access_token)).isEqualTo(true);
 	}
 
 	@Test
@@ -64,7 +64,7 @@ public class TestJwtService {
 		assertEquals(true, before.before(after));
 	}
 
-	@Test(expected = RefreshTokenExpireDateUpdatePeriodException.class)
+	@Test(expected = RefreshTokenUpdatePeriodOverException.class)
 	public void expectedRefreshTokenExpireDateUpdatePeriodException() throws Exception {
 		String sampleRefreshTkn = jwtService
 				.createSampleRefreshToken(Date.from(ZonedDateTime.now().plusDays(6).toInstant()));
@@ -78,7 +78,7 @@ public class TestJwtService {
 		String updatedToken = null;
 		try {
 			jwtService.thisRefreshTokenUsable(sampleRefreshTkn);
-		}  catch (RefreshTokenExpireDateUpdatePeriodException e) {
+		}  catch (RefreshTokenUpdatePeriodOverException e) {
 			updatedToken = jwtService.updateRefreshToken(sampleRefreshTkn);
 		}
 		
