@@ -23,10 +23,8 @@ public class UserService {
 		String aceessToken = null;
 		String refreshToken = null;
 
-		User findUser = userRepository.findByEmail(user.getEmail());
-		if (findUser == null) {  
-			findUser = userRepository.save(user);
-		}
+		Optional<User> findUserOpt = Optional.ofNullable(userRepository.findByEmail(user.getEmail()));
+		User findUser = findUserOpt.orElseThrow(UserNotFoundException::new);
 		
 		HashMap<String, Object> claims = new HashMap<>();
 		claims.put("email", findUser.getEmail());
@@ -46,5 +44,11 @@ public class UserService {
 		claims.put("email", user.getEmail());
 		claims.put("id", user.getId());
 		return claims;
+	}
+	
+	public User signUp(User user) {
+		User findUser;
+		findUser = userRepository.save(user);
+		return findUser;
 	}
 }
