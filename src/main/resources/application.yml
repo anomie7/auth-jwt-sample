@@ -29,7 +29,7 @@ spring:
   datasource:
     platform: mariadb  
     driver-class-name: org.mariadb.jdbc.Driver  
-    url: jdbc:mariadb://withkid-rdb:3306/with-kid
+    url: jdbc:mariadb://withkid_rdb:3306/with-kid
     username: root  
     password: 1234  
   jpa:
