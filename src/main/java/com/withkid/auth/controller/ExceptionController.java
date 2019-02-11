@@ -1,5 +1,6 @@
 package com.withkid.auth.controller;
 
+import com.withkid.auth.exception.DuplicatedEmailException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -17,12 +18,19 @@ import io.jsonwebtoken.ExpiredJwtException;
 public class ExceptionController {
 
 	@ExceptionHandler(UserNotFoundException.class)
-	public ResponseEntity<ErrorResponse> userNotFoundHanler() {
+	public ResponseEntity<ErrorResponse> userNotFoundHandler() {
 		ErrorResponse body = ErrorResponse.builder().name(UserNotFoundException.class.getSimpleName())
 				.msg("유저를 찾을 수 없습니다.").status(HttpStatus.NOT_FOUND).build();
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
 	}
-	
+
+	@ExceptionHandler(DuplicatedEmailException.class)
+	public ResponseEntity<ErrorResponse> userExistHandler() {
+		ErrorResponse body = ErrorResponse.builder().name(DuplicatedEmailException.class.getSimpleName())
+				.msg("같은 이메일이 이미 존재합니다.").status(HttpStatus.CONFLICT).build();
+		return ResponseEntity.status(HttpStatus.CONFLICT).body(body);
+	}
+
 	@ExceptionHandler(PasswordNotMatchException.class)
 	public ResponseEntity<ErrorResponse> passwordNotMatchHanler() {
 		ErrorResponse body = ErrorResponse.builder().name(PasswordNotMatchException.class.getSimpleName())
