@@ -3,7 +3,9 @@ package com.withkid.auth.service;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.HashMap;
+import java.util.Optional;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,37 +34,43 @@ public class TestUserService {
 	private JwtService jwtService;
 	
 	private User olderUser = new User(null, "depromeet@older.com", "password5");
-	
+	private User passwordNotMatchUser = new User(null, "depromeet@older.com", "worngPassword");
+
 	@Before
-	public void signIn() {
+	public void saveUser() throws Exception {
 		userService.signUp(olderUser);
 	}
-	
+
+	@Test
+	public void testSignUp() throws Exception{
+		userService.signUp(new User(null, "newUser@naver.com", "passwordnew123"));
+	}
+
+	@Test(expected = Exception.class)
+	public void testExistEmailSignUp() throws Exception {
+		userService.signUp(passwordNotMatchUser);
+	}
+
 	@Test(expected=UserNotFoundException.class)
-	public void testNewUserLogin() throws Exception {
+	public void testNotExistUserLogin() throws Exception {
 		User newUser = new User(null, "depromeet2@new.com", "password5");
 		HashMap<String, String> response = userService.login(newUser);
-		Object email = jwtService.getBody(response.get("accessToken")).getBody().get("email");
-		
-		User findUser = userRepository.findByEmail(newUser.getEmail());
-		assertThat(findUser).isEqualTo(newUser);
-		assertThat(email).isEqualTo(newUser.getEmail());
 	}
 	
 	@Test
-	public void testOlderUserLogin() throws Exception {
+	public void testExistUserLogin() throws Exception {
 		userService.login(olderUser);
 		
 		HashMap<String, String> response = userService.login(olderUser);
 		Object email = jwtService.getBody(response.get("accessToken")).getBody().get("email");
-		User findUser = userRepository.findByEmail(olderUser.getEmail());
-		assertThat(findUser.getEmail()).isEqualTo(email);
+		Optional<User> findUserOpt = userRepository.findByEmail(olderUser.getEmail());
+		assertThat(findUserOpt.get().getEmail()).isEqualTo(email);
 	}
 	
 	@Test(expected=PasswordNotMatchException.class)
 	public void testPasswordNotMatchUserLogin() throws Exception {
-		User passwordNotMatchUser = new User(null, "depromeet@older.com", "worngPassword");
+
 		userService.login(passwordNotMatchUser);
 	}
-	
+
 }
