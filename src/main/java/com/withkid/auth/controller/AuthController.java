@@ -27,12 +27,6 @@ public class AuthController {
 	final String jwt_header = "Authorization";
 	final String refreshHeader = "refresh-token";
 
-	@PostMapping(path = "/login")
-	public ResponseEntity<HashMap<String, String>> generateToken(@RequestBody User user) throws Exception {
-		HashMap<String, String> tokens = userService.login(user);
-		return ResponseEntity.ok().body(tokens);
-	}
-
 	@PostMapping(path = "/accessToken")
 	public ResponseEntity<HashMap<String, String>> getToken(@RequestHeader(jwt_header) String refreshToken) throws Exception {
 		String accessToken = null;
