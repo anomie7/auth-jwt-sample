@@ -3,6 +3,7 @@ package com.withkid.auth.service;
 import java.util.HashMap;
 import java.util.Optional;
 
+import com.withkid.auth.exception.DuplicatedEmailException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +25,8 @@ public class UserService {
 		String aceessToken = null;
 		String refreshToken = null;
 
-		User findUser = findUser(user).get();
+		user.passwordToHash();
+		User findUser = this.findPasswordMatchedUser(user);
 		
 		HashMap<String, Object> claims = new HashMap<>();
 		claims.put("email", findUser.getEmail());
@@ -37,28 +39,40 @@ public class UserService {
 		return res;
 	}
 
-	private Optional<User> findUser(User user) {
-		Optional<User> findUserOpt = Optional.ofNullable(userRepository.findByEmail(user.getEmail()));
-		User findUser = findUserOpt.orElseThrow(UserNotFoundException::new);
+	private User findPasswordMatchedUser(User user) {
+		User findUser = this.findEmailMatchedUser(user.getEmail());
 		if(user.getPassword().equals(findUser.getPassword())) {
-			return findUserOpt;
+			return findUser;
 		}else {
 			throw new PasswordNotMatchException();
 		}
 	}
 	
 	public HashMap<String, Object> getAccessTokenClaims(String email) {
-		Optional<User> userOpt = Optional.ofNullable(userRepository.findByEmail(email));
-		User user = userOpt.orElseThrow(UserNotFoundException::new);
+		User user = this.findEmailMatchedUser(email);
 		HashMap<String, Object> claims = new HashMap<String, Object>();
 		claims.put("email", user.getEmail());
 		claims.put("id", user.getId());
 		return claims;
 	}
-	
-	public User signUp(User user) {
-		User findUser;
-		findUser = userRepository.save(user);
+
+	public User signUp(User user) throws Exception {
+		Optional<User> findUserOpt = userRepository.findByEmail(user.getEmail());
+		User newUser;
+
+		if(findUserOpt.isPresent()) {
+			throw new DuplicatedEmailException();
+		}else {
+			user.passwordToHash();
+			 newUser = userRepository.save(user);
+		}
+		return newUser;
+	}
+
+	public User findEmailMatchedUser(String email){
+		Optional<User> findUserOpt = userRepository.findByEmail(email);
+		User findUser = findUserOpt.orElseThrow(UserNotFoundException::new);
 		return findUser;
 	}
+
 }

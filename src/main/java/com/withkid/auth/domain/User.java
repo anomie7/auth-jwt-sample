@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.UniqueElements;
 
 import java.security.NoSuchAlgorithmException;
 
@@ -19,7 +20,11 @@ public class User {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "USER_ID")
 	private Long id;
+
+	@Column(unique = true, nullable = false)
 	private String email;
+
+	@Column(nullable = false)
 	private String password;
 
 	public void passwordToHash() throws NoSuchAlgorithmException {
