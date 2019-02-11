@@ -1,14 +1,14 @@
 package com.withkid.auth.domain;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 
+import com.withkid.auth.utills.ShaUtill;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.security.NoSuchAlgorithmException;
 
 @Entity
 @Getter @EqualsAndHashCode
@@ -16,9 +16,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class User {
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "USER_ID")
 	private Long id;
 	private String email;
 	private String password;
+
+	public void passwordToHash() throws NoSuchAlgorithmException {
+		this.password = ShaUtill.sha256(this.password);
+	}
 }
