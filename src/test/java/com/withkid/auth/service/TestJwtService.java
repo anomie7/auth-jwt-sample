@@ -1,13 +1,8 @@
 package com.withkid.auth.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
-
-import java.io.UnsupportedEncodingException;
-import java.time.ZonedDateTime;
-import java.util.Date;
-import java.util.HashMap;
-
+import com.withkid.auth.exception.RefreshTokenUpdatePeriodOverException;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,10 +11,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.withkid.auth.exception.RefreshTokenUpdatePeriodOverException;
+import java.io.UnsupportedEncodingException;
+import java.time.ZonedDateTime;
+import java.util.Date;
+import java.util.HashMap;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
+
+
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
