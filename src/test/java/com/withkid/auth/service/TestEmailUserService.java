@@ -1,11 +1,10 @@
 package com.withkid.auth.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.util.HashMap;
-import java.util.Optional;
-
-import org.junit.After;
+import com.withkid.auth.domain.EmailUser;
+import com.withkid.auth.domain.User;
+import com.withkid.auth.exception.PasswordNotMatchException;
+import com.withkid.auth.exception.UserNotFoundException;
+import com.withkid.auth.repository.UserRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,53 +14,53 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.withkid.auth.domain.User;
-import com.withkid.auth.exception.PasswordNotMatchException;
-import com.withkid.auth.exception.UserNotFoundException;
-import com.withkid.auth.repository.UserRepository;
+import java.util.HashMap;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @Transactional
 @ActiveProfiles("test")
-public class TestUserService {
+public class TestEmailUserService {
 	@Autowired
 	private UserRepository userRepository;
 	
 	@Autowired
-	private UserService userService;
+	private EmailUserService emailUserService;
 	@Autowired
 	private JwtService jwtService;
 	
-	private User olderUser = new User(null, "depromeet@older.com", "password5");
-	private User passwordNotMatchUser = new User(null, "depromeet@older.com", "worngPassword");
+	private EmailUser olderUser = new EmailUser(null, "depromeet@older.com", "password5");
+	private EmailUser passwordNotMatchUser = new EmailUser(null, "depromeet@older.com", "worngPassword");
 
 	@Before
 	public void saveUser() throws Exception {
-		userService.signUp(olderUser);
+		emailUserService.signUp(olderUser);
 	}
 
 	@Test
 	public void testSignUp() throws Exception{
-		userService.signUp(new User(null, "newUser@naver.com", "passwordnew123"));
+		emailUserService.signUp(new EmailUser(null, "newUser@naver.com", "passwordnew123"));
 	}
 
 	@Test(expected = Exception.class)
 	public void testExistEmailSignUp() throws Exception {
-		userService.signUp(passwordNotMatchUser);
+		emailUserService.signUp(passwordNotMatchUser);
 	}
 
 	@Test(expected=UserNotFoundException.class)
 	public void testNotExistUserLogin() throws Exception {
-		User newUser = new User(null, "depromeet2@new.com", "password5");
-		HashMap<String, String> response = userService.login(newUser);
+		EmailUser newUser = new EmailUser(null, "depromeet2@new.com", "password5");
+		HashMap<String, String> response = emailUserService.login(newUser);
 	}
 	
 	@Test
 	public void testExistUserLogin() throws Exception {
-		userService.login(olderUser);
+		emailUserService.login(olderUser);
 		
-		HashMap<String, String> response = userService.login(olderUser);
+		HashMap<String, String> response = emailUserService.login(olderUser);
 		Object email = jwtService.getBody(response.get("accessToken")).getBody().get("email");
 		Optional<User> findUserOpt = userRepository.findByEmail(olderUser.getEmail());
 		assertThat(findUserOpt.get().getEmail()).isEqualTo(email);
@@ -70,7 +69,7 @@ public class TestUserService {
 	@Test(expected=PasswordNotMatchException.class)
 	public void testPasswordNotMatchUserLogin() throws Exception {
 
-		userService.login(passwordNotMatchUser);
+		emailUserService.login(passwordNotMatchUser);
 	}
 
 }

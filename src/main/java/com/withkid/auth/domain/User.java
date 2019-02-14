@@ -1,21 +1,19 @@
 package com.withkid.auth.domain;
 
-import javax.persistence.*;
-
-import com.withkid.auth.utills.ShaUtill;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.validator.constraints.UniqueElements;
 
-import java.security.NoSuchAlgorithmException;
+import javax.persistence.*;
 
 @Entity
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "DTYPE")
 @Getter @EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
+public abstract class User {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "USER_ID")
@@ -23,11 +21,4 @@ public class User {
 
 	@Column(unique = true, nullable = false)
 	private String email;
-
-	@Column(nullable = false)
-	private String password;
-
-	public void passwordToHash() throws NoSuchAlgorithmException {
-		this.password = ShaUtill.sha256(this.password);
-	}
 }
