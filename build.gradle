@@ -31,11 +31,18 @@ dependencies {
 	implementation('org.springframework.boot:spring-boot-starter-mustache')
 	implementation('org.springframework.boot:spring-boot-starter-web')
 	compile('org.mariadb.jdbc:mariadb-java-client')
-	compile('org.jsoup:jsoup:1.11.3')
-	compile group: 'io.jsonwebtoken', name: 'jjwt', version: '0.7.0'
-	compile('org.seleniumhq.selenium:selenium-java')
 	runtimeOnly('org.springframework.boot:spring-boot-devtools')
 	runtimeOnly('com.h2database:h2')
 	compileOnly('org.projectlombok:lombok')
 	testImplementation('org.springframework.boot:spring-boot-starter-test')
+
+	//crawling library
+	compile('org.jsoup:jsoup:1.11.3')
+	compile('org.seleniumhq.selenium:selenium-java')
+
+	//jwt
+	compile 'io.jsonwebtoken:jjwt:0.7.0'
+
+	compile 'org.springframework.social:spring-social-facebook:2.0.3.RELEASE'
+
 }
