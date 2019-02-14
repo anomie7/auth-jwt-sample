@@ -7,14 +7,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.withkid.auth.domain.User;
 import com.withkid.auth.exception.RefreshTokenUpdatePeriodOverException;
 import com.withkid.auth.service.JwtService;
-import com.withkid.auth.service.UserService;
+import com.withkid.auth.service.EmailUserService;
 
 @RestController
 public class AuthController {
@@ -22,7 +20,7 @@ public class AuthController {
 	private JwtService jwtService;
 
 	@Autowired
-	private UserService userService;
+	private EmailUserService emailUserService;
 
 	final String jwt_header = "Authorization";
 	final String refreshHeader = "refresh-token";
@@ -34,13 +32,13 @@ public class AuthController {
 		try {
 			if (jwtService.thisRefreshTokenUsable(refreshToken)) {
 				String email = (String) jwtService.getBody(refreshToken).getBody().get("email");
-				HashMap<String, Object> claims = userService.getAccessTokenClaims(email);
+				HashMap<String, Object> claims = emailUserService.getAccessTokenClaims(email);
 				accessToken = jwtService.createAccessToken(claims);
 			}
 		} catch (RefreshTokenUpdatePeriodOverException e) {
 			refreshToken = jwtService.updateRefreshToken(refreshToken);
 			String email = (String) jwtService.getBody(refreshToken).getBody().get("email");
-			HashMap<String, Object> claims = userService.getAccessTokenClaims(email);
+			HashMap<String, Object> claims = emailUserService.getAccessTokenClaims(email);
 			accessToken = jwtService.createAccessToken(claims);
 			tokens.put("refreshToken", refreshToken);
 			tokens.put("accessToken", accessToken);
