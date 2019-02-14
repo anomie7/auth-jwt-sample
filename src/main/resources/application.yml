@@ -11,7 +11,7 @@ spring:
       app-id: 2246330218761993
       app-secret: d934e29a113c5a5044cae12737fe3467
       scope: public_profile, email, user_birthday
-      redirect-url: http://localhost:8082/facebook
+      redirect-url: http://localhost:8082/facebookToken
 server:
   port: 8082
 ---
