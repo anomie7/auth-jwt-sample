@@ -13,7 +13,6 @@ import org.springframework.social.oauth2.AccessGrant;
 import org.springframework.social.oauth2.OAuth2Operations;
 import org.springframework.social.oauth2.OAuth2Parameters;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.inject.Inject;
 import java.util.HashMap;
@@ -42,8 +41,8 @@ public class FacebookService {
     }
 
 
-    public HashMap<String, String> login(@RequestParam("code") String code) throws Exception {
-        org.springframework.social.facebook.api.User profile = this.getUserProfile(code);
+    public HashMap<String, String> login(String code, String temporaryCode) throws Exception {
+        org.springframework.social.facebook.api.User profile = this.getUserProfile(code, temporaryCode);
         String url = FacebookUser.getPictureUrl(profile);
         FacebookUser facebookUser = new FacebookUser(null, profile.getEmail(), profile.getName(), url, profile.getBirthday());
         FacebookUser newUser = this.signUp(facebookUser);
@@ -66,8 +65,8 @@ public class FacebookService {
         return res;
     }
 
-    public User getUserProfile(String code){
-        String facebookAccessToken = this.createFacebookAccessToken(code);
+    public User getUserProfile(String code, String temporaryCode){
+        String facebookAccessToken = this.createFacebookAccessToken(code, temporaryCode);
         Facebook facebook = new FacebookTemplate(facebookAccessToken);
         UserOperations userOperations = facebook.userOperations();
         String [] fields = { "id", "email",  "name", "picture", "birthday"};
@@ -76,14 +75,14 @@ public class FacebookService {
         return profile;
     }
 
-    public String createFacebookAccessToken(String code) {
-        AccessGrant accessGrant = connectionFactory.getOAuthOperations().exchangeForAccess(code, redirUrl, null);
+    public String createFacebookAccessToken(String code, String temporaryCode) {
+        AccessGrant accessGrant = connectionFactory.getOAuthOperations().exchangeForAccess(code, redirUrl + temporaryCode, null);
         return accessGrant.getAccessToken();
     }
 
-    public String createFacebookAuthorizationURL(){
+    public String createFacebookAuthorizationURL(String temporaryCode){
         OAuth2Parameters params = new OAuth2Parameters();
-        params.setRedirectUri(redirUrl);
+        params.setRedirectUri(redirUrl + temporaryCode);
         params.setScope(scope);
         return oauthOperations.buildAuthorizeUrl(params);
     }
