@@ -25,7 +25,6 @@ repositories {
 	mavenCentral()
 }
 
-
 dependencies {
 	implementation('org.springframework.boot:spring-boot-starter-data-jpa')
 	implementation('org.springframework.boot:spring-boot-starter-mustache')
@@ -43,6 +42,9 @@ dependencies {
 	//jwt
 	compile 'io.jsonwebtoken:jjwt:0.7.0'
 
+	//social
 	compile 'org.springframework.social:spring-social-facebook:2.0.3.RELEASE'
 
+	//firebase-admin
+	compile 'com.google.firebase:firebase-admin:5.10.0'
 }
