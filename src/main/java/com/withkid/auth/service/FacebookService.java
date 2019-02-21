@@ -41,8 +41,8 @@ public class FacebookService {
     }
 
 
-    public HashMap<String, String> login(String code, String temporaryCode) throws Exception {
-        org.springframework.social.facebook.api.User profile = this.getUserProfile(code, temporaryCode);
+    public HashMap<String, String> login(String code) throws Exception {
+        org.springframework.social.facebook.api.User profile = this.getUserProfile(code);
         String url = FacebookUser.getPictureUrl(profile);
         FacebookUser facebookUser = new FacebookUser(null, profile.getEmail(), profile.getName(), url, profile.getBirthday());
         FacebookUser newUser = this.signUp(facebookUser);
@@ -65,8 +65,8 @@ public class FacebookService {
         return res;
     }
 
-    public User getUserProfile(String code, String temporaryCode){
-        String facebookAccessToken = this.createFacebookAccessToken(code, temporaryCode);
+    public User getUserProfile(String code){
+        String facebookAccessToken = this.createFacebookAccessToken(code);
         Facebook facebook = new FacebookTemplate(facebookAccessToken);
         UserOperations userOperations = facebook.userOperations();
         String [] fields = { "id", "email",  "name", "picture", "birthday"};
@@ -75,14 +75,14 @@ public class FacebookService {
         return profile;
     }
 
-    public String createFacebookAccessToken(String code, String temporaryCode) {
-        AccessGrant accessGrant = connectionFactory.getOAuthOperations().exchangeForAccess(code, redirUrl + temporaryCode, null);
+    public String createFacebookAccessToken(String code) {
+        AccessGrant accessGrant = connectionFactory.getOAuthOperations().exchangeForAccess(code, redirUrl, null);
         return accessGrant.getAccessToken();
     }
 
-    public String createFacebookAuthorizationURL(String temporaryCode){
+    public String createFacebookAuthorizationURL(){
         OAuth2Parameters params = new OAuth2Parameters();
-        params.setRedirectUri(redirUrl + temporaryCode);
+        params.setRedirectUri(redirUrl);
         params.setScope(scope);
         return oauthOperations.buildAuthorizeUrl(params);
     }
