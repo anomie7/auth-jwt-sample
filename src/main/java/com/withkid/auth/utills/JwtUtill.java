@@ -1,11 +1,11 @@
 package com.withkid.auth.utills;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 public class JwtUtill {
 

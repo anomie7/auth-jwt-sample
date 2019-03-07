@@ -29,16 +29,12 @@ dependencies {
 	implementation('org.springframework.boot:spring-boot-starter-data-jpa')
 	implementation('org.springframework.boot:spring-boot-starter-mustache')
 	implementation('org.springframework.boot:spring-boot-starter-web')
-	
-	compile('org.mariadb.jdbc:mariadb-java-client')
 	runtimeOnly('org.springframework.boot:spring-boot-devtools')
-	runtimeOnly('com.h2database:h2')
 	compileOnly('org.projectlombok:lombok')
 	testImplementation('org.springframework.boot:spring-boot-starter-test')
 
-	//crawling library
-	compile('org.jsoup:jsoup:1.11.3')
-	compile('org.seleniumhq.selenium:selenium-java')
+	compile('org.mariadb.jdbc:mariadb-java-client')
+	runtimeOnly('com.h2database:h2')
 
 	//jwt
 	compile 'io.jsonwebtoken:jjwt:0.7.0'
@@ -46,6 +42,5 @@ dependencies {
 	//social
 	compile 'org.springframework.social:spring-social-facebook:2.0.3.RELEASE'
 
-	//firebase-admin
-	compile 'com.google.firebase:firebase-admin:5.10.0'
+	compile group: 'com.vaadin.external.google', name: 'android-json', version: '0.0.20131108.vaadin1'
 }
