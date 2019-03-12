@@ -2,6 +2,8 @@ package com.withkid.auth.controller;
 
 import java.util.HashMap;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -52,5 +54,13 @@ public class AuthController {
 	public ResponseEntity<String> validateToken(@RequestHeader(jwt_header) String accessToken){
 		jwtService.thisAccessTokenUsable(accessToken);
 		return ResponseEntity.ok().body("this access token valid");
+	}
+	
+	@GetMapping(path = "/userId")
+	public ResponseEntity<String> getUserId(@RequestHeader(jwt_header) String accessToken){
+		jwtService.thisAccessTokenUsable(accessToken);
+		Jws<Claims> body = jwtService.getBody(accessToken);
+		String userId = String.valueOf(body.getBody().get("user-id"));
+		return ResponseEntity.ok().body(userId);
 	}
 }
