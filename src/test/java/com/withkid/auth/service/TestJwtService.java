@@ -37,7 +37,7 @@ public class TestJwtService {
 		HashMap<String, Object> claims = new HashMap<>();
 		claims.put("email", "depromeet@tract4.com");
 		test_refresh_token = jwtService.createRefreshToken(claims);
-		claims.put("Id", 1);
+		claims.put("user-id", 5L);
 		test_access_token = jwtService.createAccessToken(claims);
 	}
 

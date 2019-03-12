@@ -53,7 +53,7 @@ public class EmailUserService {
 		EmailUser user = (EmailUser) this.findEmailMatchedUser(email);
 		HashMap<String, Object> claims = new HashMap<String, Object>();
 		claims.put("email", user.getEmail());
-		claims.put("id", user.getId());
+		claims.put("user-id", user.getId());
 		return claims;
 	}
 
